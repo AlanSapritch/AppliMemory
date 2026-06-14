@@ -89,6 +89,7 @@ html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color
 .note-icon{font-size:1.6rem;flex-shrink:0}
 .note-body{flex:1}
 .note-text{font-size:1rem;font-weight:800;color:var(--text);line-height:1.3}
+.note-rdv-date{font-size:.95rem;font-weight:900;color:var(--gold);margin-top:5px}
 .note-date{font-size:.75rem;font-weight:700;color:var(--soft);margin-top:3px}
 .note-del{background:none;border:none;color:#ccc;font-size:1.15rem;cursor:pointer;padding:3px;align-self:flex-start}
 .note-del:active{color:var(--red)}
@@ -539,7 +540,7 @@ Classe cette note dans UN des tiroirs :
 - "info" : autre information à durée indéterminée.
 
 Réponds UNIQUEMENT en JSON strict :
-{"text":"formulation claire et concise","tiroir":"ephemere|permanent|rdv|soin|info","type":"rdv|soin|info|tache|permanent","icon":"emoji pertinent","date":"date précise si mentionnée ou null"}`;
+{"text":"formulation claire et concise","tiroir":"ephemere|permanent|rdv|soin|info","type":"rdv|soin|info|tache|permanent","icon":"emoji pertinent","date":"date ABSOLUE et lisible du rendez-vous si mentionnée (ex: 'Lundi 16 juin à 14h', 'Mardi 23 juin 2026 à 9h30') ou null si aucune date future mentionnée","dateISO":"date au format YYYY-MM-DD si mentionnée ou null"}`;
 }
 
 function promptQuery(q){
@@ -569,7 +570,7 @@ Réponds en français, chaleureusement, en 2-3 phrases courtes. Sois précis et 
 function parseNote(json,fallback){
   try{
     const obj=JSON.parse(json.replace(/```json|```/g,'').trim());
-    return{text:obj.text||fallback,tiroir:obj.tiroir||'info',type:obj.type||'info',icon:obj.icon||'📝',date:obj.date||null,ts:Date.now()};
+    return{text:obj.text||fallback,tiroir:obj.tiroir||'info',type:obj.type||'info',icon:obj.icon||'📝',date:obj.date||null,dateISO:obj.dateISO||null,ts:Date.now()};
   }catch{return{text:fallback,tiroir:'info',type:'info',icon:'📝',ts:Date.now()};}
 }
 
@@ -607,7 +608,8 @@ function renderNoteList(id,list,emptyMsg){
       <div class="note-icon">${n.icon||'📝'}</div>
       <div class="note-body">
         <div class="note-text">${esc(n.text)}</div>
-        <div class="note-date">${tirLabel(n)} · ${new Date(n.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${n.date?' · 📅 '+n.date:''}</div>
+        ${n.date?`<div class="note-rdv-date">📅 ${esc(n.date)}</div>`:''}
+        <div class="note-date">${tirLabel(n)} · Noté le ${new Date(n.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
       <button class="note-del" onclick="deleteNote(${i})">✕</button>
     </div>`;
