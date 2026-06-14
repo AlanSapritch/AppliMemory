@@ -166,6 +166,17 @@ html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color
 #statusBar.err{background:var(--red);display:block}
 #statusBar.info{background:var(--blue2);display:block}
 #statusBar.gold{background:var(--gold);display:block}
+
+/* ALARM MODAL */
+.alarm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+.alarm-modal-box{background:white;border-radius:24px;padding:24px 20px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.alarm-modal-icon{font-size:3rem;margin-bottom:10px}
+.alarm-modal-box h3{font-size:1.2rem;font-weight:900;color:var(--blue);margin-bottom:8px}
+.alarm-modal-box p{font-size:.9rem;font-weight:700;color:var(--soft);line-height:1.6;margin-bottom:16px}
+.alarm-time-big{font-size:2.5rem;font-weight:900;color:var(--gold);margin:10px 0}
+.alarm-steps{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-bottom:16px;font-size:.88rem;font-weight:700;color:var(--text);line-height:2}
+.alarm-open-btn{width:100%;background:var(--gold);color:white;border:none;border-radius:14px;padding:15px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:900;cursor:pointer;margin-bottom:8px}
+.alarm-close-btn{width:100%;background:var(--bg);color:var(--soft);border:none;border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
 </style>
 </head>
 <body>
@@ -645,7 +656,26 @@ function addRoutine(){
   renderRoutines();
   document.getElementById('rName').value='';
   document.getElementById('rMsg').value='';
-  showStatus('✅ Routine enregistrée pour toujours !','ok');
+  showStatus('✅ Routine enregistrée ! Créez maintenant l\'alarme Android ci-dessous.','ok');
+  // Afficher modal alarme Android
+  showAlarmModal(time, name);
+}
+
+function showAlarmModal(time, label){
+  document.getElementById('alarmModalTime').textContent=time;
+  document.getElementById('alarmModalLabel').textContent=label;
+  document.getElementById('alarmModal').style.display='flex';
+}
+
+function openAndroidAlarm(time, label){
+  const[h,m]=time.split(':').map(Number);
+  // Intent Android natif pour l'appli Horloge (Google Clock)
+  const url='intent://alarm#Intent;action=android.intent.action.SET_ALARM;S.android.intent.extra.alarm.MESSAGE='+encodeURIComponent(label)+';i.android.intent.extra.alarm.HOUR='+h+';i.android.intent.extra.alarm.MINUTES='+m+';B.android.intent.extra.alarm.SKIP_UI=false;end';
+  window.location.href=url;
+}
+
+function closeAlarmModal(){
+  document.getElementById('alarmModal').style.display='none';
 }
 
 function deleteRoutine(id){
@@ -680,7 +710,8 @@ function renderRoutines(){
         <span class="routine-status ${statusClass}">${statusLabel}</span>
       </div>
       ${!done&&due?`<button class="confirm-btn" onclick="manualConfirm(${r.id})">✅ Marquer comme fait</button>`:''}
-      <div style="text-align:right;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+        <button onclick="showAlarmModal('${r.time}','${r.name.replace(/'/g,"\\'")}")" style="background:var(--gold);color:white;border:none;border-radius:10px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;cursor:pointer">⏰ Alarme Android</button>
         <button class="note-del" onclick="deleteRoutine(${r.id})" style="color:#ccc;font-size:.85rem">🗑 Supprimer</button>
       </div>
     </div>`;
@@ -925,6 +956,27 @@ function showStatus(msg,type){
   clearTimeout(b._t);b._t=setTimeout(()=>b.className='',3500);
 }
 </script>
+
+<!-- ALARM MODAL -->
+<div class="alarm-modal" id="alarmModal">
+  <div class="alarm-modal-box">
+    <div class="alarm-modal-icon">⏰</div>
+    <h3>Créer l'alarme Android</h3>
+    <p>Pour que le rappel sonne même quand l'appli est fermée, créez une alarme dans l'Horloge Android :</p>
+    <div class="alarm-time-big" id="alarmModalTime">08:00</div>
+    <p style="font-weight:900;color:var(--text);margin-bottom:6px">Nom : "<span id="alarmModalLabel"></span>"</p>
+    <div class="alarm-steps">
+      1️⃣ Appuyez sur le bouton ci-dessous<br>
+      2️⃣ L'appli Horloge s'ouvre<br>
+      3️⃣ Vérifiez l'heure et le nom<br>
+      4️⃣ Appuyez <strong>Enregistrer</strong> ✅
+    </div>
+    <button class="alarm-open-btn" onclick="openAndroidAlarm(document.getElementById('alarmModalTime').textContent, document.getElementById('alarmModalLabel').textContent)">
+      📱 Ouvrir l'Horloge Android
+    </button>
+    <button class="alarm-close-btn" onclick="closeAlarmModal()">J'ai déjà créé l'alarme</button>
+  </div>
+</div>
 
 
 </body></html>
