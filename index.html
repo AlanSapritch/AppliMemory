@@ -664,14 +664,23 @@ function addRoutine(){
 function showAlarmModal(time, label){
   document.getElementById('alarmModalTime').textContent=time;
   document.getElementById('alarmModalLabel').textContent=label;
+  // Remplir aussi les références dans le tip de secours
+  document.querySelectorAll('.alarmTimeRef').forEach(el=>el.textContent=time);
+  document.querySelectorAll('.alarmLabelRef').forEach(el=>el.textContent=label);
   document.getElementById('alarmModal').style.display='flex';
 }
 
 function openAndroidAlarm(time, label){
   const[h,m]=time.split(':').map(Number);
-  // Intent Android natif pour l'appli Horloge (Google Clock)
-  const url='intent://alarm#Intent;action=android.intent.action.SET_ALARM;S.android.intent.extra.alarm.MESSAGE='+encodeURIComponent(label)+';i.android.intent.extra.alarm.HOUR='+h+';i.android.intent.extra.alarm.MINUTES='+m+';B.android.intent.extra.alarm.SKIP_UI=false;end';
-  window.location.href=url;
+  // Intent Android SET_ALARM — ouvre l'appli Horloge avec heure et nom préremplis
+  const intent='intent:#Intent;action=android.intent.action.SET_ALARM;'+
+    'i.android.intent.extra.alarm.HOUR='+h+';'+
+    'i.android.intent.extra.alarm.MINUTES='+m+';'+
+    'S.android.intent.extra.alarm.MESSAGE='+encodeURIComponent(label)+';'+
+    'B.android.intent.extra.alarm.SKIP_UI=false;'+
+    'B.android.intent.extra.alarm.VIBRATE=true;'+
+    'end';
+  window.location.href=intent;
 }
 
 function closeAlarmModal(){
@@ -961,20 +970,22 @@ function showStatus(msg,type){
 <div class="alarm-modal" id="alarmModal">
   <div class="alarm-modal-box">
     <div class="alarm-modal-icon">⏰</div>
-    <h3>Créer l'alarme Android</h3>
-    <p>Pour que le rappel sonne même quand l'appli est fermée, créez une alarme dans l'Horloge Android :</p>
+    <h3>Créer l'alarme dans l'Horloge</h3>
     <div class="alarm-time-big" id="alarmModalTime">08:00</div>
-    <p style="font-weight:900;color:var(--text);margin-bottom:6px">Nom : "<span id="alarmModalLabel"></span>"</p>
+    <p style="font-weight:900;color:var(--text);font-size:1rem;margin-bottom:14px">"<span id="alarmModalLabel"></span>"</p>
     <div class="alarm-steps">
-      1️⃣ Appuyez sur le bouton ci-dessous<br>
-      2️⃣ L'appli Horloge s'ouvre<br>
-      3️⃣ Vérifiez l'heure et le nom<br>
-      4️⃣ Appuyez <strong>Enregistrer</strong> ✅
+      1️⃣ Appuyez sur <strong>Ouvrir l'Horloge</strong><br>
+      2️⃣ L'heure et le nom sont déjà remplis<br>
+      3️⃣ Appuyez <strong>OK</strong> ou <strong>Enregistrer</strong> ✅<br>
+      4️⃣ Revenez dans Ma Mémoire
     </div>
     <button class="alarm-open-btn" onclick="openAndroidAlarm(document.getElementById('alarmModalTime').textContent, document.getElementById('alarmModalLabel').textContent)">
-      📱 Ouvrir l'Horloge Android
+      ⏰ Ouvrir l'Horloge Android
     </button>
-    <button class="alarm-close-btn" onclick="closeAlarmModal()">J'ai déjà créé l'alarme</button>
+    <div style="background:#fff3cd;border-radius:12px;padding:12px;margin:10px 0;font-size:.82rem;font-weight:700;color:#7a5000;text-align:left">
+      💡 Si l'Horloge ne s'ouvre pas, allez dans l'appli <strong>Horloge</strong> manuellement et créez une alarme à <strong><span class="alarmTimeRef"></span></strong> intitulée <strong>"<span class="alarmLabelRef"></span>"</strong>
+    </div>
+    <button class="alarm-close-btn" onclick="closeAlarmModal()">✅ Alarme créée, fermer</button>
   </div>
 </div>
 
