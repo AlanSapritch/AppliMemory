@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Ma Mémoire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --blue:#1a3a5c;--green:#1a7a4a;--blue2:#2563a8;
+  --gold:#d4850a;--red:#c0392b;--red2:#e74c3c;
+  --purple:#7b2d8b;--orange:#c0550a;
+  --bg:#eef2f8;--white:#fff;--text:#1a2940;--soft:#6080a0;
+}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+.screen{display:none;flex-direction:column;height:100%}
+.screen.active{display:flex}
+.hdr{display:flex;align-items:center;gap:12px;padding:15px 16px 12px;flex-shrink:0;color:white}
+.hdr h2{font-size:1.25rem;font-weight:900;color:white}
+.hdr p{font-size:0.8rem;font-weight:700;opacity:.75}
+.hdr.blue{background:var(--blue)}.hdr.green{background:var(--green)}
+.hdr.blue2{background:var(--blue2)}.hdr.gold{background:var(--gold)}
+.hdr.purple{background:var(--purple)}.hdr.red{background:var(--red)}
+.back-btn{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:42px;height:42px;font-size:1.3rem;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* ACCUEIL */
+.home-top{background:var(--blue);color:white;text-align:center;padding:16px 16px 12px;flex-shrink:0}
+.home-top h1{font-size:1.7rem;font-weight:900}
+.home-top .date-line{font-size:0.9rem;opacity:.7;font-weight:700;margin-top:3px}
+.big-buttons{display:flex;flex-direction:column;gap:12px;padding:12px 14px 0;flex:1}
+.big-btn{flex:1;border:none;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;padding:14px;min-height:0;box-shadow:0 6px 18px rgba(0,0,0,.17);transition:transform .12s}
+.big-btn:active{transform:scale(.96)}
+.big-btn.g{background:var(--green)}.big-btn.b{background:var(--blue2)}
+.big-btn .bi{font-size:2.8rem;line-height:1}
+.big-btn .bl{font-size:1.4rem;font-weight:900;color:white;text-align:center;line-height:1.2}
+.big-btn .bs{font-size:0.85rem;font-weight:700;color:rgba(255,255,255,.75)}
+.urg-btn{margin:10px 14px 0;border:none;border-radius:20px;background:var(--red2);color:white;padding:16px;font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 5px 18px rgba(199,57,43,.4);flex-shrink:0;transition:transform .12s}
+.urg-btn:active{transform:scale(.96)}
+.home-small{display:flex;padding:10px 14px 14px;gap:8px;flex-shrink:0}
+.sm-btn{flex:1;background:white;border:none;border-radius:14px;padding:10px 4px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:800;color:var(--blue);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;gap:3px}
+.sm-btn .si{font-size:1.25rem}
+.sm-btn:active{background:#dde8f5}
+
+/* BADGE routine */
+.routine-badge{position:absolute;top:-4px;right:-4px;background:var(--red2);color:white;border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center}
+.sm-btn{position:relative}
+
+/* MIC */
+#screenMic{align-items:center}
+.mic-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:16px;width:100%;max-width:460px}
+.mic-circle{width:150px;height:150px;border-radius:50%;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 8px 26px rgba(0,0,0,.2);transition:transform .12s;flex-shrink:0}
+.mic-circle:active{transform:scale(.93)}
+.mc-icon{font-size:3.6rem;line-height:1}
+.mc-text{font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:white}
+.mic-circle.idle.noter{background:var(--green)}.mic-circle.idle.demander{background:var(--blue2)}
+.mic-circle.listening{background:var(--red);animation:pulse 1.2s infinite}
+.mic-circle.thinking{background:var(--gold);animation:glow 1s infinite}
+.mic-circle.done.noter{background:var(--green)}.mic-circle.done.demander{background:var(--blue2)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}70%{box-shadow:0 0 0 34px rgba(192,57,43,0)}100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(212,133,10,.5)}50%{box-shadow:0 0 0 22px rgba(212,133,10,0)}100%{box-shadow:0 0 0 0 rgba(212,133,10,0)}}
+.mic-status{font-size:1.05rem;font-weight:800;text-align:center;color:var(--text);min-height:28px}
+.bubble{width:100%;border-radius:18px;padding:14px 16px;font-size:1rem;font-weight:700;line-height:1.5;display:none}
+.bubble.visible{display:block}
+.bubble.transcript{background:white;color:var(--text);border-left:5px solid var(--soft);font-style:italic}
+.bubble.response.noter{background:var(--green);color:white}
+.bubble.response.demander{background:var(--blue);color:white}
+.repeat-btn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:50px;color:white;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;padding:9px 20px;cursor:pointer;margin-top:9px;display:none}
+.repeat-btn.visible{display:inline-block}
+
+/* TIROIRS */
+.tiroir-tabs{display:flex;background:white;border-radius:0;border-bottom:2px solid #e0e8f5;flex-shrink:0}
+.tiroir-tab{flex:1;padding:12px 4px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;color:var(--soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tiroir-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tiroir-tab .ti{font-size:1.2rem}
+.tiroir-content{display:none}.tiroir-content.active{display:block}
+
+/* NOTES communes */
+.section-pad{padding:12px 13px 20px}
+.note-card{background:white;border-radius:16px;padding:13px 13px 11px;margin-bottom:10px;display:flex;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);border-left:5px solid var(--blue2);animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+.note-card.rdv{border-left-color:var(--gold)}.note-card.soin{border-left-color:var(--green)}
+.note-card.famille{border-left-color:var(--purple)}.note-card.permanent{border-left-color:var(--blue)}
+.note-card.ephemere{border-left-color:var(--orange)}
+.note-icon{font-size:1.6rem;flex-shrink:0}
+.note-body{flex:1}
+.note-text{font-size:1rem;font-weight:800;color:var(--text);line-height:1.3}
+.note-date{font-size:.75rem;font-weight:700;color:var(--soft);margin-top:3px}
+.note-del{background:none;border:none;color:#ccc;font-size:1.15rem;cursor:pointer;padding:3px;align-self:flex-start}
+.note-del:active{color:var(--red)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--soft)}
+.empty-state .ei{font-size:2.8rem;margin-bottom:10px}
+.empty-state p{font-size:.95rem;font-weight:700;line-height:1.5}
+
+/* ROUTINES */
+.routine-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);border-left:5px solid var(--gold)}
+.routine-card.confirmed{border-left-color:var(--green);background:#f0fff5}
+.routine-card.missed{border-left-color:var(--red);background:#fff5f5}
+.routine-top{display:flex;align-items:center;gap:10px}
+.routine-icon{font-size:1.8rem;flex-shrink:0}
+.routine-info{flex:1}
+.routine-name{font-size:1rem;font-weight:900;color:var(--text)}
+.routine-time{font-size:.82rem;font-weight:700;color:var(--soft);margin-top:2px}
+.routine-status{font-size:.8rem;font-weight:800;padding:4px 10px;border-radius:50px;flex-shrink:0}
+.routine-status.ok{background:#d4edda;color:var(--green)}
+.routine-status.nok{background:#f8d7da;color:var(--red)}
+.routine-status.wait{background:#fff3cd;color:var(--gold)}
+.confirm-btn{width:100%;margin-top:10px;background:var(--green);color:white;border:none;border-radius:12px;padding:11px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer}
+.confirm-btn:active{opacity:.85}
+
+/* FORM ROUTINE */
+.add-routine-form{background:white;border-radius:16px;padding:16px;margin:12px 13px 0;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.add-routine-form h3{font-size:.95rem;font-weight:900;color:var(--blue);margin-bottom:12px}
+.frm-label{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--soft);display:block;margin-bottom:5px;margin-top:10px}
+.frm-label:first-of-type{margin-top:0}
+.frm-input{width:100%;border:2px solid #dce8f5;border-radius:11px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);background:var(--bg);outline:none}
+.frm-input:focus{border-color:var(--gold)}
+.days-row{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 10px}
+.day-chip{background:var(--bg);border:2px solid #dce8f5;border-radius:50px;padding:5px 10px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;color:var(--soft);cursor:pointer}
+.day-chip.on{background:var(--gold);border-color:var(--gold);color:white}
+.add-btn{width:100%;background:var(--gold);color:white;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;margin-top:4px}
+
+/* FAMILLE */
+.fam-body{padding:12px 13px 24px}
+.fam-card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.fam-card h3{font-size:.95rem;font-weight:900;color:var(--blue);margin-bottom:8px}
+.fam-card p{font-size:.85rem;font-weight:700;color:var(--soft);line-height:1.5;margin-bottom:8px}
+.fam-card input,.fam-card textarea{width:100%;border:2px solid #dce8f5;border-radius:11px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);background:var(--bg);outline:none;margin-bottom:8px}
+.fam-card input:focus,.fam-card textarea:focus{border-color:var(--purple)}
+.fam-btn{width:100%;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;cursor:pointer;color:white}
+.fam-btn.purple{background:var(--purple)}.fam-btn.blue{background:var(--blue2);margin-top:6px}.fam-btn.green{background:var(--green)}
+.export-row{display:flex;gap:8px;margin-top:6px}
+.export-row .fam-btn{flex:1}
+
+/* suivi du jour */
+.suivi-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.suivi-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f4f8}
+.suivi-row:last-child{border-bottom:none}
+.suivi-icon{font-size:1.4rem;flex-shrink:0}
+.suivi-name{flex:1;font-size:.95rem;font-weight:800}
+.suivi-badge{font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:50px}
+.suivi-badge.ok{background:#d4edda;color:var(--green)}
+.suivi-badge.nok{background:#f8d7da;color:var(--red)}
+.suivi-badge.wait{background:#fff3cd;color:var(--gold)}
+
+/* RÉGLAGES */
+.settings-body{padding:12px 13px 24px}
+.scard{background:white;border-radius:16px;padding:15px 16px;margin-bottom:11px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.scard label{display:block;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--soft);margin-bottom:7px}
+.scard input,.scard textarea{width:100%;border:2px solid #dce8f5;border-radius:11px;padding:11px 13px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);background:var(--bg);outline:none}
+.scard input:focus,.scard textarea:focus{border-color:var(--blue2)}
+.scard .row{display:flex;align-items:center;justify-content:space-between}
+.scard .row label{margin:0}
+.toggle{width:44px;height:25px;accent-color:var(--blue2)}
+.save-btn{width:100%;background:var(--blue);color:white;border:none;border-radius:14px;padding:15px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(26,58,92,.3);margin-top:4px}
+.tip{background:#fff8e0;border:2px solid #ffe08a;border-radius:14px;padding:13px 15px;font-size:.85rem;font-weight:700;color:#6a4800;line-height:1.6;margin-top:12px}
+
+/* STATUS */
+#statusBar{position:fixed;top:0;left:0;right:0;padding:10px;text-align:center;font-size:.92rem;font-weight:800;color:white;z-index:999;display:none}
+#statusBar.ok{background:var(--green);display:block}
+#statusBar.err{background:var(--red);display:block}
+#statusBar.info{background:var(--blue2);display:block}
+#statusBar.gold{background:var(--gold);display:block}
+</style>
+</head>
+<body>
+<div id="statusBar" class="">⚙️ Entrez votre clé API dans Réglages</div>
+
+<!-- ════════ ACCUEIL ════════ -->
+<div id="screenHome" class="screen active">
+  <div class="home-top">
+    <h1>🧠 Ma Mémoire</h1>
+    <div class="date-line" id="homeDateLine">dimanche 14 juin</div>
+  </div>
+  <div class="big-buttons">
+    <button class="big-btn g" onclick="goMic('noter')">
+      <div class="bi">✏️</div>
+      <div class="bl">On me dit quelque chose</div>
+      <div class="bs">Appuyer pour mémoriser</div>
+    </button>
+    <button class="big-btn b" onclick="goMic('demander')">
+      <div class="bi">💬</div>
+      <div class="bl">Je veux me souvenir</div>
+      <div class="bs">Appuyer pour poser une question</div>
+    </button>
+  </div>
+  <button class="urg-btn" id="urgBtn" onclick="callUrgence()" style="display: none;">📞 APPELER À L'AIDE</button>
+  <div class="home-small">
+    <button class="sm-btn" onclick="goScreen('screenNotes')"><span class="si">📋</span>Mes notes</button>
+    <button class="sm-btn" id="btnRoutines" onclick="goScreen('screenRoutines')"><span class="si">⏰</span>Routines</button>
+    <button class="sm-btn" onclick="goScreen('screenFamille')"><span class="si">👨‍👩‍👧</span>Famille</button>
+    <button class="sm-btn" onclick="goScreen('screenSettings')"><span class="si">⚙️</span>Réglages</button>
+  </div>
+</div>
+
+<!-- ════════ MICRO ════════ -->
+<div id="screenMic" class="screen">
+  <div class="hdr" id="micHdr">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div><h2 id="micTitle">Mémoriser</h2><p id="micSub">Appuyez et parlez</p></div>
+  </div>
+  <div class="mic-body">
+    <button id="micCircle" class="mic-circle idle noter" onclick="toggleMic()">
+      <div class="mc-icon" id="mcIcon">🎤</div>
+      <div class="mc-text" id="mcText">Appuyer</div>
+    </button>
+    <div class="mic-status" id="micStatus">Prêt — appuyez sur le micro</div>
+    <div class="bubble transcript" id="bubbleTrans"></div>
+    <div class="bubble response" id="bubbleResp">
+      <span id="respText"></span><br>
+      <button class="repeat-btn" id="repeatBtn" onclick="speakLast()">🔊 Répéter</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ NOTES (3 tiroirs) ════════ -->
+<div id="screenNotes" class="screen">
+  <div class="hdr blue">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div><h2>📋 Mes notes</h2><p>3 tiroirs selon l'importance</p></div>
+  </div>
+  <div class="tiroir-tabs">
+    <button class="tiroir-tab active" data-t="today" onclick="switchTiroir('today')"><span class="ti">🌅</span>Aujourd'hui</button>
+    <button class="tiroir-tab" data-t="savoire" onclick="switchTiroir('savoire')"><span class="ti">🔵</span>À savoir</button>
+    <button class="tiroir-tab" data-t="tous" onclick="switchTiroir('tous')"><span class="ti">📋</span>Tout</button>
+  </div>
+  <div class="scroll-body">
+    <div id="notesToday" class="tiroir-content active section-pad"></div>
+    <div id="notesSavoir" class="tiroir-content section-pad"></div>
+    <div id="notesTous" class="tiroir-content section-pad"></div>
+  </div>
+</div>
+
+<!-- ════════ ROUTINES ════════ -->
+<div id="screenRoutines" class="screen">
+  <div class="hdr gold">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div><h2>⏰ Routines du quotidien</h2><p>Rappels permanents — configurés une fois</p></div>
+  </div>
+  <div class="scroll-body">
+    <div class="add-routine-form" id="addRoutineForm">
+      <h3>➕ Ajouter une routine</h3>
+      <label class="frm-label">Nom de la routine</label>
+      <input class="frm-input" id="rName" placeholder="ex : Prendre mes médicaments">
+      <label class="frm-label">Heure du rappel</label>
+      <input class="frm-input" type="time" id="rTime" value="08:00">
+      <label class="frm-label">Jours</label>
+      <div class="days-row" id="daysRow">
+        <div class="day-chip on" data-d="1">Lun</div><div class="day-chip on" data-d="2">Mar</div>
+        <div class="day-chip on" data-d="3">Mer</div><div class="day-chip on" data-d="4">Jeu</div>
+        <div class="day-chip on" data-d="5">Ven</div><div class="day-chip on" data-d="6">Sam</div>
+        <div class="day-chip on" data-d="0">Dim</div>
+      </div>
+      <label class="frm-label">Message de rappel (lu à voix haute)</label>
+      <input class="frm-input" id="rMsg" placeholder="ex : C'est l'heure de prendre vos médicaments !">
+      <label class="frm-label">Délai d'alerte famille (si pas confirmé)</label>
+      <select class="frm-input" id="rAlert">
+        <option value="0">Pas d'alerte famille</option>
+        <option value="30">Après 30 min sans confirmation</option>
+        <option value="60" selected="selected">Après 1h sans confirmation</option>
+        <option value="120">Après 2h sans confirmation</option>
+      </select>
+      <button class="add-btn" style="margin-top:12px" onclick="addRoutine()">💾 Enregistrer cette routine</button>
+    </div>
+    <div class="section-pad" id="routinesList"></div>
+  </div>
+</div>
+
+<!-- ════════ FAMILLE ════════ -->
+<div id="screenFamille" class="screen">
+  <div class="hdr purple">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div><h2>👨‍👩‍👧 Famille</h2><p>Suivi et communication</p></div>
+  </div>
+  <div class="scroll-body">
+    <div class="fam-body">
+
+      <!-- Suivi du jour -->
+      <div class="fam-card">
+        <h3>📊 Suivi d'aujourd'hui</h3>
+        <p>Ce que papa a confirmé avoir fait.</p>
+        <div id="suiviList"></div>
+      </div>
+
+      <!-- Message -->
+      <div class="fam-card">
+        <h3>✍️ Laisser un message à papa</h3>
+        <textarea id="famMsg" rows="3" placeholder="ex : N'oublie pas ton rendez-vous lundi à 14h !"></textarea>
+        <button class="fam-btn purple" onclick="addFamNote()">📨 Enregistrer dans ses notes</button>
+      </div>
+
+      <!-- Export -->
+      <div class="fam-card">
+        <h3>📤 Envoyer les notes par SMS ou email</h3>
+        <input type="tel" id="exportPhone" placeholder="Numéro SMS">
+        <input type="email" id="exportEmail" placeholder="Adresse email">
+        <div class="export-row">
+          <button class="fam-btn blue" onclick="exportSMS()">💬 SMS</button>
+          <button class="fam-btn green" onclick="exportEmail()">📧 Email</button>
+        </div>
+      </div>
+
+      <!-- Urgence -->
+      <div class="fam-card">
+        <h3>🆘 Bouton d'urgence</h3>
+        <input type="tel" id="urgPhone" placeholder="Numéro à appeler">
+        <input type="text" id="urgName" placeholder="Nom affiché (ex : Marie ma fille)">
+        <button class="fam-btn purple" onclick="saveUrgence()">💾 Enregistrer</button>
+      </div>
+
+      <!-- Notif famille -->
+      <div class="fam-card">
+        <h3>🔔 Alertes famille</h3>
+        <p>Entrez votre numéro. Quand papa confirme ou rate une routine, vous recevrez un SMS automatique.</p>
+        <input type="tel" id="famillePhone" placeholder="Votre numéro (enfant/aidant)">
+        <input type="text" id="familleName" placeholder="Votre prénom (ex : Marie)">
+        <button class="fam-btn purple" onclick="saveFamilleContact()">💾 Enregistrer</button>
+        <p style="font-size:.75rem;color:#999;margin-top:8px;font-weight:700;">⚠️ Les SMS sont envoyés via votre appli SMS (lien automatique).</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RÉGLAGES ════════ -->
+<div id="screenSettings" class="screen">
+  <div class="hdr blue">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div><h2>⚙️ Réglages</h2></div>
+  </div>
+  <div class="scroll-body">
+    <div class="settings-body">
+      <div class="scard">
+        <label>🔑 Clé API Anthropic</label>
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-…">
+        <p style="font-size:.72rem;color:#888;margin-top:5px;font-weight:700;">Obtenir sur console.anthropic.com</p>
+      </div>
+      <div class="scard"><label>👤 Prénom</label><input type="text" id="nameInput" placeholder="ex : Georges"></div>
+      <div class="scard">
+        <label>📝 Contexte (famille, médecins…)</label>
+        <textarea id="contextInput" rows="3" placeholder="Ma fille s'appelle Marie. Mon médecin est Dr Dupont."></textarea>
+      </div>
+      <div class="scard">
+        <div class="row"><label>🔤 Grand texte</label><input type="checkbox" class="toggle" id="bigTextToggle" onchange="toggleBigText()"></div>
+      </div>
+      <button class="save-btn" onclick="saveSettings()">✅ Enregistrer</button>
+      <div class="tip">
+        <strong>💡 L'IA trie automatiquement :</strong><br>
+        <em>Éphémère (aujourd'hui) :</em> «&nbsp;Courses avec Alan cet après-midi&nbsp;»<br>
+        <em>Permanent :</em> «&nbsp;Comment Chromecaster&nbsp;», «&nbsp;Mon code wifi&nbsp;»<br>
+        <em>Confirmation routine :</em> «&nbsp;J'ai pris mes médicaments&nbsp;» → ✅ + SMS famille
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ STATE
+let notes     = JSON.parse(localStorage.getItem('notes')     || '[]');
+let routines  = JSON.parse(localStorage.getItem('routines')  || '[]');
+let settings  = JSON.parse(localStorage.getItem('settings')  || '{}');
+let confirms  = JSON.parse(localStorage.getItem('confirms')  || '{}'); // {routineId_YYYY-MM-DD: bool}
+let recog=null, listening=false, lastResp='', mode='noter';
+let remTimers=[], alertTimers=[];
+
+// ══ INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  applySettings();
+  initRecog();
+  scheduleAllRoutines();
+  requestNotifPerm();
+  updateUrgBtn();
+  renderDayChips();
+  updateDateLine();
+  purgeTodayNotes();
+  updateRoutineBadge();
+  if(!settings.apiKey) setTimeout(()=>showStatus('⚙️ Entrez votre clé API dans Réglages','info'),900);
+});
+
+function updateDateLine(){
+  const d=new Date();
+  document.getElementById('homeDateLine').textContent=
+    d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+}
+
+// ══ NAV
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='screenNotes')   renderAllNotes();
+  if(id==='screenRoutines'){renderRoutines();}
+  if(id==='screenFamille') {renderSuivi();applyFamSettings();}
+}
+function goHome(){ stopMic(); goScreen('screenHome'); }
+function goMic(m){
+  if(!settings.apiKey){goScreen('screenSettings');showStatus('⚠️ Entrez votre clé API d\'abord','err');return;}
+  mode=m;
+  document.getElementById('micHdr').className='hdr '+(m==='noter'?'green':'blue2');
+  document.getElementById('micTitle').textContent=m==='noter'?'✏️ Mémoriser':'💬 Se souvenir';
+  document.getElementById('micSub').textContent=m==='noter'?'Dites ce qu\'on vous a dit':'Posez votre question';
+  resetMicUI(); goScreen('screenMic');
+  setTimeout(startMic,400);
+}
+
+// ══ TIROIRS
+function switchTiroir(t){
+  document.querySelectorAll('.tiroir-tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+  document.querySelectorAll('.tiroir-content').forEach(c=>c.classList.remove('active'));
+  const map={today:'notesToday',savoire:'notesSavoir',tous:'notesTous'};
+  document.getElementById(map[t]).classList.add('active');
+}
+
+// ══ SPEECH
+function initRecog(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showStatus('❌ Utilisez Chrome','err');return;}
+  recog=new SR(); recog.lang='fr-FR'; recog.continuous=false; recog.interimResults=true;
+  recog.onstart=()=>{listening=true;setMicState('listening');document.getElementById('micStatus').textContent='🔴 Je vous écoute…';hideBubbles();};
+  recog.onresult=(e)=>{
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal)final+=t;else interim+=t;
+    }
+    if(interim)showTrans(interim,true);
+    if(final){showTrans(final,false);stopMic();onSpeech(final.trim());}
+  };
+  recog.onerror=(e)=>{
+    listening=false;resetMicUI();
+    if(e.error==='not-allowed')showStatus('❌ Autorisez le micro dans Chrome','err');
+    else if(e.error==='no-speech'){showStatus('Rien entendu — réessayez','info');hideBubbles();}
+    else showStatus('Erreur : '+e.error,'err');
+  };
+  recog.onend=()=>{if(listening){listening=false;resetMicUI();}};
+}
+function toggleMic(){if(listening)stopMic();else startMic();}
+function startMic(){if(!recog)return;hideBubbles();try{recog.start();}catch(e){}}
+function stopMic(){if(recog&&listening){listening=false;recog.stop();}}
+
+// ══ TRAITEMENT PAROLE
+async function onSpeech(text){
+  // Détecter confirmation de routine
+  const confirmed=detectConfirmation(text);
+  if(confirmed){await doConfirmRoutine(confirmed,text);return;}
+  if(mode==='noter')await doNote(text);else await doQuery(text);
+}
+
+function detectConfirmation(text){
+  const t=text.toLowerCase();
+  const triggers=['j\'ai pris','j\'ai fait','j\'ai mangé','j\'ai préparé','c\'est fait','terminé','je l\'ai fait','pris mes médicaments','fait mon semainier','pris le doliprane','pris les cachets','avalé'];
+  if(!triggers.some(tr=>t.includes(tr)))return null;
+  // Chercher quelle routine correspond
+  for(const r of routines){
+    const rwords=r.name.toLowerCase().split(' ').filter(w=>w.length>3);
+    if(rwords.some(w=>t.includes(w)))return r;
+  }
+  // Aucune routine spécifique → retourner la première non confirmée du jour
+  const today=todayKey();
+  return routines.find(r=>!confirms[r.id+'_'+today])||null;
+}
+
+async function doConfirmRoutine(routine,text){
+  setMicState('thinking');
+  document.getElementById('micStatus').textContent='✅ Confirmation en cours…';
+  const today=todayKey();
+  const key=routine.id+'_'+today;
+  confirms[key]=true;
+  saveConfirms();
+  // Annuler alerte famille si en attente
+  if(alertTimers[routine.id]) clearTimeout(alertTimers[routine.id]);
+  // Notifier famille
+  const msg='✅ '+settings.name+' a confirmé : "'+routine.name+'" ('+nowTime()+')';
+  sendFamilleNotif(msg,'ok');
+  const rep='Parfait ! J\'ai bien noté que vous avez '+routine.name.toLowerCase()+'. Bravo !';
+  showResp(rep);speakText(rep);
+  setMicState('done');
+  document.getElementById('micStatus').textContent='✅ Confirmé !';
+  updateRoutineBadge();
+}
+
+async function doNote(text){
+  setMicState('thinking');
+  document.getElementById('micStatus').textContent='⏳ Je mémorise…';
+  try{
+    const res=await callClaude(promptNote(text));
+    const note=parseNote(res,text);
+    notes.unshift(note);
+    saveNotes();
+    const msg='Bien noté ! '+note.text;
+    showResp(msg);speakText(msg);
+    setMicState('done');
+    document.getElementById('micStatus').textContent='✅ Mémorisé !';
+  }catch(e){showStatus('❌ '+e.message,'err');resetMicUI();}
+}
+
+async function doQuery(text){
+  setMicState('thinking');
+  document.getElementById('micStatus').textContent='⏳ Je cherche…';
+  try{
+    const ans=await callClaude(promptQuery(text));
+    showResp(ans);speakText(ans);
+    setMicState('done');
+    document.getElementById('micStatus').textContent='💬 Réponse ci-dessous';
+  }catch(e){showStatus('❌ '+e.message,'err');resetMicUI();}
+}
+
+// ══ CLAUDE
+async function callClaude(prompt){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':settings.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:prompt}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Erreur API ('+r.status+')');}
+  const d=await r.json();
+  return d.content.map(b=>b.text||'').join('');
+}
+
+function promptNote(text){
+  const now=new Date();
+  const ds=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const ts=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  return `Tu es l'assistant mémoire de ${settings.name||'l\'utilisateur'}.
+Contexte : ${settings.context||'aucun'}
+Aujourd'hui : ${ds} à ${ts}
+Routines configurées : ${routines.map(r=>r.name).join(', ')||'aucune'}
+
+L'utilisateur veut mémoriser : "${text}"
+
+Classe cette note dans UN des tiroirs :
+- "ephemere" : événement d'aujourd'hui ou très court terme (aujourd'hui, ce soir, demain au plus tard). S'efface automatiquement.
+- "permanent" : information durable à garder pour toujours (comment faire quelque chose, numéro, code, procédure, info médicale, contact).
+- "rdv" : rendez-vous à une date précise future.
+- "soin" : médicament ou soin de santé ponctuel.
+- "info" : autre information à durée indéterminée.
+
+Réponds UNIQUEMENT en JSON strict :
+{"text":"formulation claire et concise","tiroir":"ephemere|permanent|rdv|soin|info","type":"rdv|soin|info|tache|permanent","icon":"emoji pertinent","date":"date précise si mentionnée ou null"}`;
+}
+
+function promptQuery(q){
+  const ds=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const today=todayKey();
+  const todayNotes=notes.filter(n=>isToday(n.ts)).map(n=>`[AUJOURD'HUI] ${n.text}`);
+  const permNotes=notes.filter(n=>n.tiroir==='permanent').map(n=>`[PERMANENT] ${n.text}`);
+  const otherNotes=notes.filter(n=>n.tiroir!=='permanent'&&!isToday(n.ts)).slice(0,20).map(n=>`[${n.type}] ${n.text} (noté le ${new Date(n.ts).toLocaleDateString('fr-FR')})`);
+  const confirmedToday=routines.filter(r=>confirms[r.id+'_'+today]).map(r=>`✅ ${r.name}`);
+  const pendingToday=routines.filter(r=>!confirms[r.id+'_'+today]&&shouldFire(r)).map(r=>`⏳ ${r.name} à ${r.time}`);
+  const allNotes=[...todayNotes,...permNotes,...otherNotes].join('\n')||'(aucune note)';
+  return `Tu es l'assistant mémoire bienveillant de ${settings.name||'l\'utilisateur'}.
+Contexte : ${settings.context||'aucun'}
+Aujourd'hui : ${ds}
+
+Notes mémorisées :
+${allNotes}
+
+Routines confirmées aujourd'hui : ${confirmedToday.join(', ')||'aucune'}
+Routines en attente : ${pendingToday.join(', ')||'aucune'}
+
+Question : "${q}"
+
+Réponds en français, chaleureusement, en 2-3 phrases courtes. Sois précis et rassurant.`;
+}
+
+function parseNote(json,fallback){
+  try{
+    const obj=JSON.parse(json.replace(/```json|```/g,'').trim());
+    return{text:obj.text||fallback,tiroir:obj.tiroir||'info',type:obj.type||'info',icon:obj.icon||'📝',date:obj.date||null,ts:Date.now()};
+  }catch{return{text:fallback,tiroir:'info',type:'info',icon:'📝',ts:Date.now()};}
+}
+
+// ══ NOTES RENDER
+function saveNotes(){localStorage.setItem('notes',JSON.stringify(notes));}
+
+function purgeTodayNotes(){
+  // Efface les notes éphémères de HIER (pas d'aujourd'hui)
+  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1); yesterday.setHours(23,59,59,999);
+  const before=notes.length;
+  notes=notes.filter(n=>!(n.tiroir==='ephemere'&&n.ts<yesterday.getTime()-(24*3600*1000)));
+  if(notes.length!==before)saveNotes();
+}
+
+function isToday(ts){
+  const d=new Date(ts),t=new Date();
+  return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth()&&d.getFullYear()===t.getFullYear();
+}
+
+function renderAllNotes(){
+  const todayNotes=notes.filter(n=>isToday(n.ts));
+  const permNotes=notes.filter(n=>n.tiroir==='permanent');
+  renderNoteList('notesToday',todayNotes,'🌅 Rien de prévu pour aujourd\'hui.<br>Appuyez sur ✏️ pour mémoriser !');
+  renderNoteList('notesSavoir',permNotes,'🔵 Aucune info permanente.<br>Dites quelque chose comme "le code wifi est 1234" pour l\'enregistrer ici.');
+  renderNoteList('notesTous',notes,'📋 Aucune note pour l\'instant.');
+}
+
+function renderNoteList(id,list,emptyMsg){
+  const el=document.getElementById(id);
+  if(!list.length){el.innerHTML=`<div class="empty-state"><p>${emptyMsg}</p></div>`;return;}
+  el.innerHTML=list.map((n,_i)=>{
+    const i=notes.indexOf(n);
+    const tirTag=n.tiroir==='ephemere'?' ephemere':n.tiroir==='permanent'?' permanent':n.type==='rdv'?' rdv':n.type==='soin'?' soin':n.type==='famille'?' famille':'';
+    return`<div class="note-card${tirTag}">
+      <div class="note-icon">${n.icon||'📝'}</div>
+      <div class="note-body">
+        <div class="note-text">${esc(n.text)}</div>
+        <div class="note-date">${tirLabel(n)} · ${new Date(n.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${n.date?' · 📅 '+n.date:''}</div>
+      </div>
+      <button class="note-del" onclick="deleteNote(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function tirLabel(n){
+  if(n.tiroir==='ephemere')return'🌅 Aujourd\'hui';
+  if(n.tiroir==='permanent')return'🔵 Permanent';
+  if(n.type==='rdv')return'📅 Rendez-vous';
+  if(n.type==='soin')return'💊 Santé';
+  if(n.type==='famille')return'👨‍👩‍👧 Famille';
+  return'📝 Note';
+}
+
+function deleteNote(i){
+  if(confirm('Supprimer cette note ?')){notes.splice(i,1);saveNotes();renderAllNotes();}
+}
+
+// ══ ROUTINES
+function addRoutine(){
+  const name=document.getElementById('rName').value.trim();
+  const time=document.getElementById('rTime').value;
+  const msg=document.getElementById('rMsg').value.trim()||'C\'est l\'heure de : '+name;
+  const alert=parseInt(document.getElementById('rAlert').value);
+  if(!name||!time){showStatus('Entrez un nom et une heure','err');return;}
+  const days=[...document.querySelectorAll('.day-chip.on')].map(c=>parseInt(c.dataset.d));
+  if(!days.length){showStatus('Choisissez au moins un jour','err');return;}
+  const r={id:Date.now(),name,time,msg,days,alert};
+  routines.push(r);
+  saveRoutines();
+  scheduleOne(r);
+  renderRoutines();
+  document.getElementById('rName').value='';
+  document.getElementById('rMsg').value='';
+  showStatus('✅ Routine enregistrée pour toujours !','ok');
+}
+
+function deleteRoutine(id){
+  if(confirm('Supprimer cette routine ?')){
+    routines=routines.filter(r=>r.id!==id);
+    saveRoutines();
+    renderRoutines();
+    scheduleAllRoutines();
+  }
+}
+
+function renderRoutines(){
+  const el=document.getElementById('routinesList');
+  if(!routines.length){
+    el.innerHTML='<div class="empty-state"><div class="ei">⏰</div><p>Aucune routine.<br>Ajoutez-en une ci-dessus !</p></div>';
+    return;
+  }
+  const today=todayKey();
+  const dayNames=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  el.innerHTML=routines.map(r=>{
+    const done=confirms[r.id+'_'+today];
+    const due=shouldFire(r);
+    let statusClass=due?(done?'ok':'nok'):'wait';
+    let statusLabel=due?(done?'✅ Fait':'⏳ En attente'):'–';
+    return`<div class="routine-card ${done?'confirmed':due&&!done?'missed':''}">
+      <div class="routine-top">
+        <div class="routine-icon">⏰</div>
+        <div class="routine-info">
+          <div class="routine-name">${esc(r.name)}</div>
+          <div class="routine-time">${r.time} · ${r.days.map(d=>dayNames[d]).join(', ')}</div>
+        </div>
+        <span class="routine-status ${statusClass}">${statusLabel}</span>
+      </div>
+      ${!done&&due?`<button class="confirm-btn" onclick="manualConfirm(${r.id})">✅ Marquer comme fait</button>`:''}
+      <div style="text-align:right;margin-top:8px">
+        <button class="note-del" onclick="deleteRoutine(${r.id})" style="color:#ccc;font-size:.85rem">🗑 Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateRoutineBadge();
+}
+
+function manualConfirm(id){
+  const r=routines.find(x=>x.id===id);
+  if(!r)return;
+  const today=todayKey();
+  confirms[r.id+'_'+today]=true;
+  saveConfirms();
+  if(alertTimers[id])clearTimeout(alertTimers[id]);
+  sendFamilleNotif('✅ '+(settings.name||'Papa')+' a confirmé : "'+r.name+'" ('+nowTime()+')','ok');
+  renderRoutines();
+  showStatus('✅ Confirmé !','ok');
+  updateRoutineBadge();
+}
+
+function shouldFire(r){
+  const now=new Date();
+  const day=now.getDay();
+  if(!r.days.includes(day))return false;
+  const[h,m]=r.time.split(':').map(Number);
+  const fireAt=new Date(); fireAt.setHours(h,m,0,0);
+  return now>=fireAt;
+}
+
+function scheduleAllRoutines(){
+  remTimers.forEach(t=>clearTimeout(t));
+  remTimers=[];
+  routines.forEach(r=>scheduleOne(r));
+}
+
+function scheduleOne(r){
+  const[h,m]=r.time.split(':').map(Number);
+  const now=new Date();
+  // Trouver prochaine occurrence
+  for(let i=0;i<8;i++){
+    const d=new Date(now);
+    d.setDate(d.getDate()+i);
+    d.setHours(h,m,0,0);
+    if(d>now&&r.days.includes(d.getDay())){
+      const delay=d-now;
+      const t=setTimeout(()=>fireRoutine(r),delay);
+      remTimers.push(t);
+      break;
+    }
+  }
+}
+
+function fireRoutine(r){
+  // Notification système
+  if(Notification.permission==='granted') new Notification('⏰ '+r.name,{body:r.msg});
+  speakText(r.msg);
+  showStatus('⏰ '+r.msg,'gold');
+  updateRoutineBadge();
+  // Alerte famille si pas confirmé après délai
+  if(r.alert>0){
+    alertTimers[r.id]=setTimeout(()=>{
+      const today=todayKey();
+      if(!confirms[r.id+'_'+today]){
+        sendFamilleNotif('⚠️ '+(settings.name||'Papa')+' n\'a PAS confirmé : "'+r.name+'" (prévu à '+r.time+')','err');
+      }
+    },r.alert*60*1000);
+  }
+  // Replanifier
+  setTimeout(()=>scheduleOne(r),61000);
+}
+
+function updateRoutineBadge(){
+  const today=todayKey();
+  const pending=routines.filter(r=>shouldFire(r)&&!confirms[r.id+'_'+today]).length;
+  const btn=document.getElementById('btnRoutines');
+  let badge=btn.querySelector('.routine-badge');
+  if(pending>0){
+    if(!badge){badge=document.createElement('div');badge.className='routine-badge';btn.appendChild(badge);}
+    badge.textContent=pending;
+  } else if(badge){badge.remove();}
+}
+
+// ══ FAMILLE / SUIVI
+function renderSuivi(){
+  const today=todayKey();
+  const el=document.getElementById('suiviList');
+  if(!routines.length){el.innerHTML='<p style="font-size:.9rem;color:var(--soft);font-weight:700;">Aucune routine configurée.</p>';return;}
+  el.innerHTML='<div class="suivi-card">'+routines.map(r=>{
+    const done=confirms[r.id+'_'+today];
+    const due=shouldFire(r);
+    const badge=due?(done?'ok':'nok'):'wait';
+    const label=due?(done?'✅ Fait':'❌ Pas encore'):'À venir';
+    return`<div class="suivi-row">
+      <div class="suivi-icon">⏰</div>
+      <div class="suivi-name">${esc(r.name)} <span style="color:var(--soft);font-size:.8rem">${r.time}</span></div>
+      <span class="suivi-badge ${badge}">${label}</span>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function sendFamilleNotif(msg,type){
+  if(!settings.famillePhone)return;
+  // Ouvre SMS avec le message (s'ouvre une seule fois, pas automatique sans backend)
+  // On stocke dans une file pour ne pas spammer
+  const queue=JSON.parse(localStorage.getItem('smsQueue')||'[]');
+  queue.push({msg,ts:Date.now(),sent:false});
+  localStorage.setItem('smsQueue',JSON.stringify(queue));
+  showStatus('📱 Famille notifiée',type);
+}
+
+function applyFamSettings(){
+  if(settings.famillePhone) document.getElementById('famillePhone').value=settings.famillePhone;
+  if(settings.familleName)  document.getElementById('familleName').value=settings.familleName;
+  if(settings.urgPhone)     document.getElementById('urgPhone').value=settings.urgPhone;
+  if(settings.urgName)      document.getElementById('urgName').value=settings.urgName;
+  if(settings.exportPhone)  document.getElementById('exportPhone').value=settings.exportPhone;
+  if(settings.exportEmail)  document.getElementById('exportEmail').value=settings.exportEmail;
+}
+
+function saveFamilleContact(){
+  settings.famillePhone=document.getElementById('famillePhone').value.trim();
+  settings.familleName=document.getElementById('familleName').value.trim();
+  localStorage.setItem('settings',JSON.stringify(settings));
+  showStatus('✅ Contact famille enregistré !','ok');
+}
+
+function addFamNote(){
+  const msg=document.getElementById('famMsg').value.trim();
+  if(!msg){showStatus('Tapez un message','err');return;}
+  const note={text:msg,tiroir:'info',type:'famille',icon:'👨‍👩‍👧',date:null,ts:Date.now()};
+  notes.unshift(note);saveNotes();
+  document.getElementById('famMsg').value='';
+  showStatus('✅ Message enregistré !','ok');
+  speakText('Un message de la famille vient d\'arriver : '+msg);
+}
+
+function exportSMS(){
+  const phone=document.getElementById('exportPhone').value.trim();
+  if(!phone){showStatus('Entrez un numéro','err');return;}
+  settings.exportPhone=phone;localStorage.setItem('settings',JSON.stringify(settings));
+  window.open('sms:'+phone+'?body='+encodeURIComponent(buildExport()));
+}
+function exportEmail(){
+  const email=document.getElementById('exportEmail').value.trim();
+  if(!email){showStatus('Entrez un email','err');return;}
+  settings.exportEmail=email;localStorage.setItem('settings',JSON.stringify(settings));
+  window.open('mailto:'+email+'?subject='+encodeURIComponent('Notes de '+(settings.name||'Ma Mémoire'))+'&body='+encodeURIComponent(buildExport()));
+}
+function buildExport(){
+  const name=settings.name||'votre proche';
+  const today=todayKey();
+  const routineStatus=routines.map(r=>`${confirms[r.id+'_'+today]?'✅':'❌'} ${r.name} (${r.time})`).join('\n');
+  const noteLines=notes.slice(0,20).map(n=>`${n.icon||'📝'} ${n.text} (${new Date(n.ts).toLocaleDateString('fr-FR')})`).join('\n');
+  return `Notes de ${name} — ${new Date().toLocaleDateString('fr-FR')}\n\nROUTINES DU JOUR :\n${routineStatus||'(aucune)'}\n\nNOTES :\n${noteLines}\n\nApp Ma Mémoire`;
+}
+
+function saveUrgence(){
+  settings.urgPhone=document.getElementById('urgPhone').value.trim();
+  settings.urgName=document.getElementById('urgName').value.trim();
+  localStorage.setItem('settings',JSON.stringify(settings));
+  updateUrgBtn();
+  showStatus('✅ Numéro d\'urgence enregistré !','ok');
+}
+function updateUrgBtn(){
+  const btn=document.getElementById('urgBtn');
+  btn.textContent='📞 '+(settings.urgName?'Appeler '+settings.urgName:'APPELER À L\'AIDE');
+  btn.style.display=settings.urgPhone?'flex':'none';
+}
+function callUrgence(){
+  if(!settings.urgPhone){goScreen('screenFamille');showStatus('Configurez le numéro d\'urgence','err');return;}
+  if(confirm('Appeler '+(settings.urgName||settings.urgPhone)+' ?')) window.open('tel:'+settings.urgPhone);
+}
+
+// ══ SETTINGS
+function saveSettings(){
+  settings={...settings,
+    apiKey:document.getElementById('apiKeyInput').value.trim(),
+    name:document.getElementById('nameInput').value.trim(),
+    context:document.getElementById('contextInput').value.trim(),
+    bigText:document.getElementById('bigTextToggle').checked
+  };
+  localStorage.setItem('settings',JSON.stringify(settings));
+  showStatus('✅ Réglages enregistrés !','ok');
+  setTimeout(goHome,1200);
+}
+function applySettings(){
+  if(settings.apiKey)  document.getElementById('apiKeyInput').value=settings.apiKey;
+  if(settings.name)    document.getElementById('nameInput').value=settings.name;
+  if(settings.context) document.getElementById('contextInput').value=settings.context;
+  if(settings.bigText){document.getElementById('bigTextToggle').checked=true;document.body.style.fontSize='120%';}
+}
+function toggleBigText(){document.body.style.fontSize=document.getElementById('bigTextToggle').checked?'120%':'';}
+
+// ══ MIC UI
+function setMicState(state){
+  const c=document.getElementById('micCircle');
+  const icons={idle:'🎤',listening:'⏹',thinking:'⏳',done:'✅'};
+  const texts={idle:'Appuyer',listening:'Arrêter',thinking:'…',done:'Encore'};
+  c.className='mic-circle '+state+(state==='idle'||state==='done'?' '+mode:'');
+  document.getElementById('mcIcon').textContent=icons[state]||'🎤';
+  document.getElementById('mcText').textContent=texts[state]||'';
+  c.onclick=state==='done'?()=>startMic():toggleMic;
+}
+function resetMicUI(){setMicState('idle');document.getElementById('micStatus').textContent='Prêt — appuyez sur le micro';}
+function hideBubbles(){
+  document.getElementById('bubbleTrans').className='bubble transcript';
+  document.getElementById('bubbleResp').className='bubble response '+mode;
+  document.getElementById('repeatBtn').className='repeat-btn';
+}
+function showTrans(t,interim){const b=document.getElementById('bubbleTrans');b.textContent=t;b.className='bubble transcript visible'+(interim?' italic':'');}
+function showResp(t){
+  lastResp=t;
+  document.getElementById('respText').textContent=t.replace(/[✅📅🤖]/g,'');
+  document.getElementById('bubbleResp').className='bubble response '+mode+' visible';
+  document.getElementById('repeatBtn').className='repeat-btn visible';
+}
+
+// ══ TTS
+function speakLast(){speakText(lastResp);}
+function speakText(t){
+  if(!t)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t.replace(/[^\w\s,.'?!àâéèêëîïôùûüç\-]/gi,''));
+  u.lang='fr-FR';u.rate=0.87;u.volume=1;
+  const v=speechSynthesis.getVoices().find(x=>x.lang.startsWith('fr')&&x.localService);
+  if(v)u.voice=v;
+  window.speechSynthesis.speak(u);
+}
+speechSynthesis.addEventListener('voiceschanged',()=>{});
+
+// ══ UTILS
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function saveRoutines(){localStorage.setItem('routines',JSON.stringify(routines));}
+function saveConfirms(){localStorage.setItem('confirms',JSON.stringify(confirms));}
+function requestNotifPerm(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
+function renderDayChips(){document.querySelectorAll('.day-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));}
+function showStatus(msg,type){
+  const b=document.getElementById('statusBar');
+  b.textContent=msg;b.className=type;
+  clearTimeout(b._t);b._t=setTimeout(()=>b.className='',3500);
+}
+</script>
+
+
+</body></html>
